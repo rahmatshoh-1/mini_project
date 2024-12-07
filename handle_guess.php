@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+require_once('functions.php');
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['number'])) {
     $number = $_POST['number'];
     if (!isset($_SESSION['remaining_attempts'])) {
@@ -19,35 +19,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['number'])) {
         generateFlashMassage("Неправильно Введено: $number", 'error');
         redirect('/mini_project/index.php');
         exit;
-    } else {
+    } 
+    if(($number >= 0 && $number <= 20)){
         $random = rand(0, 20);
         if ($random > $number){
-            generateFlashMassage("Загаданное число больше: $random", 'info');
-        }else{
-            generateFlashMassage("Загаданное число меньше: $random", 'info');
+            generateFlashMassage("Загаданное число больше", 'info');
+        }
+        if ($random < $number){
+            generateFlashMassage("Загаданное число меньше", 'info');
         }
         if ($random == $number) {
             generateFlashMassage("Вы угадали! Загаданное число: $random", 'success');
         } 
-        else {
-            generateFlashMassage("Рандом ($random) не совпал с введённым числом ($number)", 'error');
-        }
         redirect('/mini_project/index.php');
     }
 }
 
-function generateFlashMassage($flashMassage, $type = 'error') {
-    $_SESSION[$type] = $flashMassage;
-}
-
-function redirect($to) {
-    header("Location: $to");
-    exit;
-}
-function validateNumber($number){
-    if (!preg_match('/^\d+$/', $number)) {
-        generateFlashMassage("Введите только цифры.", 'error');
-        redirect('/mini_project/index.php');
-        exit;
-    }
-}
+generateFlashMassage($flashMassage, $type = 'error');
+redirect($to);
+validateNumber($number);
